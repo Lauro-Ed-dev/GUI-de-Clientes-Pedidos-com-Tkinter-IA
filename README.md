@@ -33,13 +33,20 @@ Um sistema de gestão simples e funcional desenvolvido em **Python** com **Tkint
 ## 🗂️ **Estrutura do Projeto**
 
 sistema_clientes_pedidos/
-│
+
+
 ├── db.py # Criação e manipulação do banco SQLite
+
 ├── form_cliente.py # Formulário para cadastro/edição de clientes
+
 ├── frame_clientes.py # Frame principal para listar e gerenciar clientes
+
 ├── form_pedido.py # Janela para criação de pedidos e itens
+
 ├── frame_pedidos.py # Frame principal para listar pedidos
+
 ├── main.py # Arquivo principal (interface e menus)
+
 └── README.md # Este arquivo
 
 
@@ -172,4 +179,5 @@ Desenvolvido por: [Seu Nome Aqui]
 ---
 
 Deseja que eu adicione um **print (captura de tela)** da interface principal no README (gerado via DALL·E ou manualmente)?  
+
 Isso deixa o projeto mais profissional para GitHub ou portfólio.
