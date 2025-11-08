@@ -177,7 +177,18 @@ Desenvolvido por: [Seu Nome Aqui]
 
 
 ---
+# Atualizações (Novembro 2025)
 
-Deseja que eu adicione um **print (captura de tela)** da interface principal no README (gerado via DALL·E ou manualmente)?  
+## Novidades na Interface do Sistema
 
-Isso deixa o projeto mais profissional para GitHub ou portfólio.
+- Nova arquitetura visual com menu lateral dinâmico e colorido.
+- Padronização das cores, fontes e estilos usando o arquivo `estilo.py`.
+- Todos os frames (Clientes, Pedidos, Dashboard, Relatórios, Histórico) carregam na mesma janela principal, sem abrir novas abas ou novas janelas.
+- Pop-ups de confirmação removidos (exceto para ações críticas de alteração/exclusão).
+- Navegação facilitada e centralizada pelo menu lateral.
+- Estilo visual mais moderno e profissional em toda a aplicação.
+
+### Como usar:
+
+- Use o menu lateral para acessar qualquer funcionalidade sem trocar de janela.
+- Todo o projeto segue um padrão visual centralizado em `estilo.py`. Edite esse arquivo para mudar cores, fontes ou botões em toda a aplicação!

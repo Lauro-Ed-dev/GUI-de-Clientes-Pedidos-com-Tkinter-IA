@@ -2,10 +2,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import date
 from db import consultar, conectar
+from log_utils import registrar_acao  # NOVO
 
-# --------------------------------------------------------
-# Janela de criação de pedido
-# --------------------------------------------------------
 def abrir_form_pedido(root):
     janela = tk.Toplevel(root)
     janela.title("Novo Pedido")
@@ -13,9 +11,6 @@ def abrir_form_pedido(root):
     janela.grab_set()
     janela.resizable(False, False)
 
-    # ----------------------------------------------------
-    # Cabeçalho: Cliente + Data
-    # ----------------------------------------------------
     frame_top = tk.Frame(janela)
     frame_top.pack(fill="x", padx=15, pady=10)
 
@@ -32,9 +27,6 @@ def abrir_form_pedido(root):
     entry_data.grid(row=0, column=3)
     entry_data.insert(0, date.today().isoformat())
 
-    # ----------------------------------------------------
-    # Tabela de Itens
-    # ----------------------------------------------------
     frame_itens = tk.LabelFrame(janela, text="Itens do Pedido")
     frame_itens.pack(fill="both", expand=True, padx=15, pady=10)
 
@@ -56,9 +48,6 @@ def abrir_form_pedido(root):
     tree.configure(yscroll=scrollbar.set)
     scrollbar.pack(side="right", fill="y")
 
-    # ----------------------------------------------------
-    # Formulário de novo item
-    # ----------------------------------------------------
     frame_add = tk.Frame(janela)
     frame_add.pack(fill="x", padx=15, pady=5)
 
@@ -80,9 +69,6 @@ def abrir_form_pedido(root):
     btn_remove = tk.Button(frame_add, text="Remover Selecionado", command=lambda: remover_item(tree, lbl_total))
     btn_remove.grid(row=0, column=7, padx=5)
 
-    # ----------------------------------------------------
-    # Total + Botões
-    # ----------------------------------------------------
     frame_bottom = tk.Frame(janela)
     frame_bottom.pack(fill="x", padx=15, pady=10)
 
@@ -95,11 +81,7 @@ def abrir_form_pedido(root):
     btn_cancelar = tk.Button(frame_bottom, text="Cancelar", width=10, command=lambda: janela.destroy())
     btn_cancelar.pack(side="right")
 
-# --------------------------------------------------------
-# Funções auxiliares
-# --------------------------------------------------------
 def adicionar_item(tree, entry_produto, entry_qtd, entry_preco, lbl_total):
-    """Adiciona um item à tabela de itens."""
     produto = entry_produto.get().strip()
     try:
         qtd = int(entry_qtd.get())
@@ -121,7 +103,6 @@ def adicionar_item(tree, entry_produto, entry_qtd, entry_preco, lbl_total):
     atualizar_total(tree, lbl_total)
 
 def remover_item(tree, lbl_total):
-    """Remove o item selecionado."""
     sel = tree.selection()
     if not sel:
         messagebox.showwarning("Atenção", "Selecione um item para remover.")
@@ -131,7 +112,6 @@ def remover_item(tree, lbl_total):
     atualizar_total(tree, lbl_total)
 
 def atualizar_total(tree, lbl_total):
-    """Atualiza o total do pedido."""
     total = 0
     for item in tree.get_children():
         subtotal = float(tree.item(item, "values")[3])
@@ -139,7 +119,6 @@ def atualizar_total(tree, lbl_total):
     lbl_total.config(text=f"Total: R$ {total:.2f}")
 
 def salvar_pedido(janela, cb_cliente, clientes, entry_data, tree):
-    """Salva o pedido e itens de forma transacional."""
     if not clientes:
         messagebox.showerror("Erro", "Nenhum cliente cadastrado.")
         return
@@ -162,7 +141,6 @@ def salvar_pedido(janela, cb_cliente, clientes, entry_data, tree):
 
     try:
         cursor = conn.cursor()
-        # Início da transação
         cursor.execute(
             "INSERT INTO pedidos (cliente_id, data, total) VALUES (?, ?, ?)",
             (cliente_id, data, total)
@@ -176,6 +154,7 @@ def salvar_pedido(janela, cb_cliente, clientes, entry_data, tree):
             )
 
         conn.commit()
+        registrar_acao("Criar", "Pedido", f"Cliente: {cliente_nome} Data: {data} Total: R$ {total:.2f}")
         messagebox.showinfo("Sucesso", "Pedido salvo com sucesso!")
         janela.destroy()
 

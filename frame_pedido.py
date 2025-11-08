@@ -4,20 +4,14 @@ from db import consultar, executar_comando
 from form_pedido import abrir_form_pedido
 from datetime import datetime
 import traceback
+from log_utils import registrar_acao  # NOVO
 
-# --------------------------------------------------------
-# Log simples
-# --------------------------------------------------------
 def registrar_erro(e):
     with open("erros.log", "a", encoding="utf-8") as f:
         f.write("\n" + "-" * 60 + "\n")
         f.write(traceback.format_exc())
     print("Erro registrado:", e)
 
-
-# --------------------------------------------------------
-# Frame de Listagem de Pedidos
-# --------------------------------------------------------
 class FramePedidos(tk.Frame):
     def __init__(self, master=None, **kwargs):
         super().__init__(master, **kwargs)
@@ -25,11 +19,7 @@ class FramePedidos(tk.Frame):
         self.criar_widgets()
         self.carregar_pedidos()
 
-    # ----------------------------------------------------
-    # Interface
-    # ----------------------------------------------------
     def criar_widgets(self):
-        # Barra de busca
         frame_busca = tk.Frame(self)
         frame_busca.pack(fill="x", padx=10, pady=5)
 
@@ -38,7 +28,6 @@ class FramePedidos(tk.Frame):
         self.entry_busca.pack(side="left")
         tk.Button(frame_busca, text="🔍", command=self.buscar_pedidos).pack(side="left", padx=5)
 
-        # Treeview
         frame_tree = tk.Frame(self)
         frame_tree.pack(fill="both", expand=True, padx=10, pady=5)
 
@@ -58,7 +47,6 @@ class FramePedidos(tk.Frame):
         self.tree.configure(yscroll=scrollbar.set)
         scrollbar.pack(side="right", fill="y")
 
-        # Botões
         frame_botoes = tk.Frame(self)
         frame_botoes.pack(fill="x", pady=10)
 
@@ -66,9 +54,6 @@ class FramePedidos(tk.Frame):
         tk.Button(frame_botoes, text="Ver Itens", width=15, command=self.ver_itens).pack(side="left", padx=10)
         tk.Button(frame_botoes, text="Excluir", width=15, command=self.excluir_pedido).pack(side="left", padx=10)
 
-    # ----------------------------------------------------
-    # Carregar pedidos
-    # ----------------------------------------------------
     def carregar_pedidos(self, filtro=""):
         for i in self.tree.get_children():
             self.tree.delete(i)
@@ -99,9 +84,6 @@ class FramePedidos(tk.Frame):
             registrar_erro(e)
             messagebox.showerror("Erro", "Falha ao carregar pedidos.")
 
-    # ----------------------------------------------------
-    # Ações CRUD
-    # ----------------------------------------------------
     def buscar_pedidos(self):
         termo = self.entry_busca.get().strip()
         self.carregar_pedidos(termo)
@@ -125,7 +107,6 @@ class FramePedidos(tk.Frame):
         self.abrir_janela_itens(pedido_id, valores[1], valores[2])
 
     def abrir_janela_itens(self, pedido_id, cliente, data):
-        """Exibe os itens de um pedido em uma janela modal."""
         itens = consultar(
             "SELECT produto, quantidade, preco_unit FROM itens_pedido WHERE pedido_id = ?",
             (pedido_id,)
@@ -171,6 +152,7 @@ class FramePedidos(tk.Frame):
         try:
             executar_comando("DELETE FROM itens_pedido WHERE pedido_id = ?", (pedido_id,))
             executar_comando("DELETE FROM pedidos WHERE id = ?", (pedido_id,))
+            registrar_acao("Excluir", "Pedido", f"ID: {pedido_id} Cliente: {cliente} Data: {data}")
             messagebox.showinfo("Sucesso", "Pedido excluído com sucesso.")
             self.carregar_pedidos()
         except Exception as e:
